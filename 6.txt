@@ -1,0 +1,210 @@
+Hyperledger Fabric Exam – Simple Step-by-Step Commands
+============================================================
+
+Clean exam version using the blocklab channel and a minimal Go chaincode.
+This intentionally leaves out the older/failed commands and previous Asset example.
+
+
+CHAINCODE (chaincode.go)
+------------------------
+
+package main
+
+import (
+    "encoding/json"
+    "github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
+)
+
+type Contract struct {
+    contractapi.Contract
+}
+
+type Student struct {
+    Name  string `json:"name"`
+    Marks int    `json:"marks"`
+}
+
+func (c *Contract) Create(ctx contractapi.TransactionContextInterface, id string, name string, marks int) error {
+    student := Student{Name: name, Marks: marks}
+    data, err := json.Marshal(student)
+    if err != nil {
+        return err
+    }
+
+    return ctx.GetStub().PutState(id, data)
+}
+
+func (c *Contract) Read(ctx contractapi.TransactionContextInterface, id string) (*Student, error) {
+    data, err := ctx.GetStub().GetState(id)
+    if err != nil {
+        return nil, err
+    }
+
+    var student Student
+    err = json.Unmarshal(data, &student)
+    if err != nil {
+        return nil, err
+    }
+
+    return &student, nil
+}
+
+func (c *Contract) Delete(ctx contractapi.TransactionContextInterface, id string) error {
+    return ctx.GetStub().DelState(id)
+}
+
+func main() {
+    cc, err := contractapi.NewChaincode(&Contract{})
+    if err != nil {
+        panic(err)
+    }
+
+    err = cc.Start()
+    if err != nil {
+        panic(err)
+    }
+}
+
+
+Save in nano:
+Ctrl+O, Enter, then Ctrl+X.
+
+
+1. START FROM A CLEAN FABRIC NETWORK
+------------------------------------
+
+cd ~/fabric-samples/test-network
+./network.sh down
+docker ps
+
+
+2. START THE FABRIC NETWORK
+---------------------------
+
+cd ~/fabric-samples/test-network
+./network.sh up -ca
+
+
+3. CREATE THE BLOCKLAB CHANNEL
+------------------------------
+
+./network.sh createChannel -c blocklab
+
+
+4. CREATE A SIMPLE CHAINCODE PROJECT
+------------------------------------
+
+cd ~
+rm -rf exam-chaincode
+mkdir exam-chaincode
+cd exam-chaincode
+go mod init exam-chaincode
+
+
+5. CREATE THE CHAINCODE FILE
+----------------------------
+
+nano chaincode.go
+
+
+6. INSTALL GO DEPENDENCIES
+--------------------------
+
+go mod tidy
+go list ./...
+
+
+7. DEPLOY THE CHAINCODE
+-----------------------
+
+cd ~/fabric-samples/test-network
+./network.sh deployCC -ccn exam_cc -ccp ~/exam-chaincode -ccl go -c blocklab
+
+
+8. SET THE ORG1 ENVIRONMENT
+---------------------------
+
+export PATH=${PWD}/../bin:$PATH
+export FABRIC_CFG_PATH=$PWD/../config/
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID=Org1MSP
+export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=$PWD/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+export CORE_PEER_ADDRESS=localhost:7051
+
+
+9. CREATE A STUDENT
+-------------------
+
+peer chaincode invoke \
+-o localhost:7050 \
+--ordererTLSHostnameOverride orderer.example.com \
+--tls \
+--cafile "$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \
+-C blocklab \
+-n exam_cc \
+--peerAddresses localhost:7051 \
+--tlsRootCertFiles "$PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" \
+-c '{"function":"Create","Args":["S1","Yashas","90"]}'
+
+
+10. READ THE STUDENT
+--------------------
+
+peer chaincode query \
+-C blocklab \
+-n exam_cc \
+-c '{"function":"Read","Args":["S1"]}'
+
+
+11. CREATE ANOTHER STUDENT
+--------------------------
+
+peer chaincode invoke \
+-o localhost:7050 \
+--ordererTLSHostnameOverride orderer.example.com \
+--tls \
+--cafile "$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \
+-C blocklab \
+-n exam_cc \
+--peerAddresses localhost:7051 \
+--tlsRootCertFiles "$PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" \
+-c '{"function":"Create","Args":["S2","Rahul","85"]}'
+
+
+12. READ THE SECOND STUDENT
+---------------------------
+
+peer chaincode query -C blocklab -n exam_cc -c '{"function":"Read","Args":["S2"]}'
+
+
+13. DELETE THE SECOND STUDENT
+-----------------------------
+
+peer chaincode invoke \
+-o localhost:7050 \
+--ordererTLSHostnameOverride orderer.example.com \
+--tls \
+--cafile "$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \
+-C blocklab \
+-n exam_cc \
+--peerAddresses localhost:7051 \
+--tlsRootCertFiles "$PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" \
+-c '{"function":"Delete","Args":["S2"]}'
+
+
+14. VERIFY DELETION
+-------------------
+
+peer chaincode query -C blocklab -n exam_cc -c '{"function":"Read","Args":["S2"]}'
+
+
+QUICK EXAM MEMORY
+-----------------
+
+Fabric flow: network → channel → chaincode → invoke → query.
+
+Chaincode APIs:
+PutState = Create
+GetState  = Read
+DelState  = Delete
