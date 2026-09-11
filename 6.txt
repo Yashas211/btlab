@@ -69,6 +69,8 @@ func main() {
 Save in nano:
 Ctrl+O, Enter, then Ctrl+X.
 
+curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh | bash -s -- docker binary
+
 
 1. START FROM A CLEAN FABRIC NETWORK
 ------------------------------------
