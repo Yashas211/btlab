@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.0;
+
+contract BalanceTransfer {
+
+    address public owner;
+
+    constructor() payable {
+        owner = msg.sender;
+    }
+
+    receive() external payable {}
+
+    fallback() external payable {}
+
+    function transfer(
+        address payable _to,
+        uint256 _amount
+    ) public {
+
+        require(
+            msg.sender == owner,
+            "Only Contract owner can transfer balance"
+        );
+
+        require(
+            address(this).balance >= _amount,
+            "Insufficient balance in contract"
+        );
+
+        (bool success, ) = _to.call{value: _amount}("");
+
+        require(
+            success,
+            "Ether transfer failed"
+        );
+    }
+
+    function getContractBalance()
+        public
+        view
+        returns (uint256)
+    {
+        return address(this).balance;
+    }
+}
