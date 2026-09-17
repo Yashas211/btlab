@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract LabCoin {
+// 1. TOKEN DETAILS
+string public name = "LabCoin";
+string public symbol = "LAB";
+uint8 public decimals = 18;
+uint256 public totalSupply;
+// 2. THE LEDGER (Who owns what)
+mapping(address => uint256) public balanceOf;
+// Events allow external apps to listen for transfers
+event Transfer(address indexed from, address indexed to, uint256 value);
+// 3. CREATION (Minting)
+// This runs only once when you deploy the contract.
+constructor(uint256 _initialSupply) {
+// Calculate total supply (Supply * 10^18)
+totalSupply = _initialSupply * (10 ** uint256(decimals));
+// Give all tokens to the contract creator (You)
+balanceOf[msg.sender] = totalSupply;
+}
+// 4. MANAGEMENT (Transferring)
+function transfer(address _to, uint256 _value) public returns (bool success) {
+// Check if sender has enough money
+require(balanceOf[msg.sender] >= _value, "Insufficient balance");
+// Deduct from sender, Add to receiver
+balanceOf[msg.sender] -= _value;
+balanceOf[_to] += _value;
+// Notify the network
+emit Transfer(msg.sender, _to, _value);
+return true;
+}
+}
