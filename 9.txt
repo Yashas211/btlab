@@ -1,0 +1,153 @@
+EXPERIMENT 9
+SETUP METAMASK AND CREATE A WALLET WITH TEST NETWORK
+1. INSTALL METAMASK
+Open Chrome, Firefox, Edge, or Brave.
+Search for the official MetaMask extension.
+Make sure the publisher is MetaMask / ConsenSys.
+Click Add to Browser / Install.
+Accept the extension permissions.
+Click the MetaMask fox icon in the browser toolbar.
+2. CREATE A NEW WALLET
+Click the MetaMask fox icon.
+Click Get Started.
+Select Create a Wallet.
+Choose your preference for data collection.
+Create a strong password.
+MetaMask will display your Secret Recovery Phrase.
+Write the recovery phrase on paper and store it safely.
+Do not share the recovery phrase or store it online.
+Confirm the recovery phrase in the correct order.
+MetaMask will create Account 1 and display the wallet address.
+3. VIEW ACCOUNT ADDRESS / EXPORT PRIVATE KEY
+
+To view the account address:
+
+Open MetaMask.
+Click the account name/address.
+The public address will be copied.
+
+To export the private key:
+
+Account
+→ Account Details
+→ Export Private Key
+→ Enter Password
+→ Copy Private Key
+
+Never share your private key.
+
+4. ENABLE TEST NETWORKS
+Click the Account icon.
+Go to Settings.
+Open Advanced.
+Enable Show Test Networks.
+Close Settings.
+Open the Network dropdown.
+Test networks such as Sepolia should now appear.
+5. SWITCH TO SEPOLIA
+Open the Network dropdown.
+Select Sepolia.
+The wallet is now connected to the Sepolia public testnet.
+Sepolia ETH is test ETH and has no monetary value.
+6. ADD SEPOLIA MANUALLY
+
+If Sepolia is not available:
+
+Network Name: Sepolia Testnet
+
+RPC URL:
+https://sepolia.infura.io/v3/YOUR_INFURA_KEY
+
+Chain ID:
+11155111
+
+Currency Symbol:
+ETH
+
+Block Explorer:
+https://sepolia.etherscan.io
+
+Replace YOUR_INFURA_KEY with your own provider URL.
+
+Click Save and select Sepolia.
+
+7. GET SEPOLIA TEST ETH
+Search for a reputable Sepolia faucet.
+Copy your MetaMask wallet address.
+Paste the address into the faucet.
+Request test ETH.
+Wait for the transaction to be confirmed.
+Open MetaMask and check the ETH balance.
+8. CONNECT METAMASK TO GANACHE
+Open Ganache.
+Select Quickstart → Ethereum.
+Ganache will create a local blockchain.
+The RPC server is usually:
+http://127.0.0.1:7545
+Ganache provides accounts containing test ETH.
+9. ADD GANACHE NETWORK TO METAMASK
+
+Open:
+
+MetaMask
+→ Network Dropdown
+→ Add Network
+→ Add Network Manually
+
+Enter:
+
+Network Name: Ganache
+
+RPC URL:
+http://127.0.0.1:7545
+
+Chain ID:
+1337
+
+Currency Symbol:
+ETH
+
+Use the Chain ID shown by your Ganache installation if it is different.
+
+Click Save.
+
+10. IMPORT GANACHE ACCOUNT
+Open Ganache.
+Select an account.
+Click Show Keys.
+Copy the Private Key.
+Open MetaMask.
+Click the Account icon.
+Select Import Account.
+Paste the Ganache private key.
+Click Import.
+Switch MetaMask to the Ganache network.
+
+MetaMask should now show the imported Ganache account and its local test ETH balance.
+
+11. VERIFY CONNECTION AND MAKE A TEST TRANSFER
+Make sure MetaMask is connected to Ganache.
+Select the imported Ganache account.
+Click Send.
+Enter another Ganache account address.
+Enter:
+0.1 ETH
+Confirm the transaction.
+Check the transaction in MetaMask.
+Check the updated balances in Ganache.
+12. VERIFY SEPOLIA CONNECTION
+Switch MetaMask to Sepolia.
+Open Assets / Activity.
+Check the ETH balance.
+Check the transaction history.
+Send a small amount of Sepolia test ETH to another Sepolia test address.
+Confirm the transaction.
+Verify the updated balance and transaction.
+IMPORTANT
+SEPOLIA
+MetaMask → Sepolia → Public Testnet → Sepolia Test ETH
+
+GANACHE
+MetaMask → Ganache → Local Blockchain → Ganache Test ETH
+
+Ganache's 100 ETH will not appear when MetaMask is connected to Sepolia.
